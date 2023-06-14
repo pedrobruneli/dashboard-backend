@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, Matches, Length, IsEmail, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, Matches, Length, IsEmail, IsNumber, IsOptional, IsNumberString } from 'class-validator';
 
 export class ProductDTO {
   @IsNotEmpty()
@@ -29,8 +29,19 @@ export class ProductDTO {
 }
 
 
-export class ProductQueryDTO {
+export class CreateProductQueryDTO {
   @IsNotEmpty()
   @IsString()
   supplierId: string
+}
+
+export class GetProductQueryDTO {
+  @IsString()
+  search: string = ''
+
+  @IsNumberString()
+  page: string = '1'
+
+  @IsNumberString()
+  limit: string = '5'
 }

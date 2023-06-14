@@ -18,4 +18,12 @@ export class CustomerService {
             throw new InternalServerErrorException('Ocorreu um erro ao tentar salvar o cliente')
         }
     }
+
+    public async listCustomers() {
+        try{
+            return await this.prismaService.customer.findMany()
+        }catch(err){
+            throw new InternalServerErrorException('Ocorreu um erro ao tentar buscar os clientes')
+        }
+    }
 }

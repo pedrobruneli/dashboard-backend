@@ -7,7 +7,7 @@ export class CustomerDTO {
 
   @IsNotEmpty()
   @IsString()
-  @Matches(new RegExp(/^([0-9]{2})9([0-9]{8})$/))
+  @Matches(new RegExp(/^([0-9]{2})([0-9]{8,9})$/))
   phone: string;
 
   @IsNotEmpty()

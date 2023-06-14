@@ -10,8 +10,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id       String @id
+  email    String
+  password String
+}
+
+model Code {
+  id   String @id
+  code String
+}
+
 model Supplier {
-  id             String    @id()
+  id             String    @id
   fantasy_name   String
   corporate_name String
   cnpj           String
@@ -49,6 +60,7 @@ model Sell {
   customer    Customer     @relation(fields: [customer_id], references: [id])
   customer_id String
   Sell_Items  Sell_Items[]
+  created_at  DateTime
 }
 
 model Sell_Items {
@@ -57,4 +69,5 @@ model Sell_Items {
   sell_id    String
   product    Product @relation(fields: [product_id], references: [id])
   product_id String
+  quantity   Int
 }

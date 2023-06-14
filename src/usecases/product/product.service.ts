@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { randomUUID } from 'crypto';
-import { ProductDTO } from './product.dto';
+import { GetProductQueryDTO, ProductDTO } from './product.dto';
 @Injectable()
 export class ProductService {
     constructor(private readonly prismaService: PrismaService){}
@@ -29,6 +29,90 @@ export class ProductService {
                 throw err
             }
             throw new InternalServerErrorException('Ocorreu um erro ao tentar salvar o produto')
+        }
+    }
+
+    public async getProducts(query: GetProductQueryDTO) {
+        try{
+            const { page, limit, search } = query
+            const searchNumber = Number(search)
+            const [totalPages, products] = await this.prismaService.$transaction(
+            [
+                this.prismaService.product.count({
+                    where: {
+                        OR: [
+                            {
+                                name: {
+                                    contains: search,
+                                    mode: 'insensitive'
+                                }
+                            },
+                            {
+                                code: {
+                                    contains: search,
+                                    mode: 'insensitive'
+                                }
+                            },
+                            {
+                                qnt_in_stock: {
+                                    equals: isNaN(searchNumber) ? undefined : searchNumber
+                                }
+                            },
+                            {
+                                sale_price: {
+                                    equals: isNaN(searchNumber) ? undefined : searchNumber
+                                }
+                            },
+                            {
+                                cost_price: {
+                                    equals: isNaN(searchNumber) ? undefined : searchNumber
+                                }
+                            }
+                        ]
+                    },
+                }),
+                this.prismaService.product.findMany({
+                    where: {
+                        OR: [
+                            {
+                                name: {
+                                    contains: search,
+                                    mode: 'insensitive'
+                                }
+                            },
+                            {
+                                code: {
+                                    contains: search,
+                                    mode: 'insensitive'
+                                }
+                            },
+                             {
+                                qnt_in_stock: {
+                                    equals: isNaN(searchNumber) ? undefined : searchNumber
+                                }
+                            },
+                            {
+                                sale_price: {
+                                    equals: isNaN(searchNumber) ? undefined : searchNumber
+                                }
+                            },
+                            {
+                                cost_price: {
+                                    equals: isNaN(searchNumber) ? undefined : searchNumber
+                                }
+                            }
+                        ]
+                    },
+                    skip: (parseInt(page) - 1) * parseInt(limit),
+                    take: parseInt(limit),
+                })
+            ]
+            )
+
+            return {totalPages, products}
+        } catch(err){
+            console.log(err)
+            throw new InternalServerErrorException('Ocorreu um erro ao tentar buscar os produtos')
         }
     }
 }
